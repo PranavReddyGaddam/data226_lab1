@@ -17,7 +17,7 @@ def return_snowflake_conn():
         user=user_id,
         password=password,
         account=account,
-        warehouse=Variable.get('SNOWFLAKE_WAREHOUSE'),,
+        warehouse=Variable.get('SNOWFLAKE_WAREHOUSE'),
         database=Variable.get('SNOWFLAKE_DATABASE'),
         schema=Variable.get('SNOWFLAKE_SCHEMA')
     )
@@ -68,7 +68,7 @@ def load_data_to_snowflake(df):
     finally:
         cur.close()
 
-
+# Define the DAG
 with DAG(
     dag_id='stock_price_pipeline',
     start_date=datetime(2024, 10, 6),
