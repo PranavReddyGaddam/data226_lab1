@@ -1,6 +1,7 @@
 from airflow import DAG
 from airflow.models import Variable
 from airflow.decorators import task
+from airflow.providers.snowflake.hooks.snowflake import SnowflakeHook
 
 from datetime import timedelta
 from datetime import datetime
@@ -9,24 +10,14 @@ import requests
 import pandas as pd
 
 def return_snowflake_conn():
-    user_id = Variable.get('SNOWFLAKE_USER')
-    password = Variable.get('SNOWFLAKE_PASSWORD')
-    account = Variable.get('SNOWFLAKE_ACCOUNT')
-
-    conn = snowflake.connector.connect(
-        user=user_id,
-        password=password,
-        account=account,
-        warehouse=Variable.get('SNOWFLAKE_WAREHOUSE'),
-        database=Variable.get('SNOWFLAKE_DATABASE'),
-        schema=Variable.get('SNOWFLAKE_SCHEMA')
-    )
+    hook = SnowflakeHook(snowflake_conn_id="snowflake_conn_id")
+    conn = hook.get_conn()
     return conn.cursor()
 
 @task
 def extract_stock_data():
     API_KEY = Variable.get('vantage_api_key')
-    stock_symbol = "AAPL"
+    stock_symbol = "CVX"
     
     url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={stock_symbol}&apikey={API_KEY}"
     response = requests.get(url)
